@@ -1,8 +1,12 @@
+"use client";
 import * as React from "react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/theme";
+import { Provider } from "react-redux";
+import { store } from "@/store";
+import AuthProvider from "@/components/AuthProvider";
 
 export default function RootLayout(props) {
   return (
@@ -10,9 +14,10 @@ export default function RootLayout(props) {
       <body>
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
-            {props.children}
+            <Provider store={store}>
+              <AuthProvider>{props.children}</AuthProvider>
+            </Provider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

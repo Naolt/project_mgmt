@@ -1,6 +1,9 @@
 "use client";
+import Members from "@/components/Project/Members";
+import AddTask from "@/components/Task/AddTask";
 import TaskCard from "@/components/TaskCard";
-import { Box, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
 const tasks = [
@@ -57,12 +60,25 @@ const projects = [
   },
 ];
 const page = ({ params }) => {
+  const [open, setOpen] = React.useState(false);
+  const [openMembers, setOpenMembers] = React.useState(false);
   const project = projects.find((project) => project.id == params.id);
   return (
     <Box sx={{ py: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        {project.title}
-      </Typography>
+      {open && <AddTask close={() => setOpen(false)} />}
+      {openMembers && <Members close={() => setOpenMembers(false)} />}
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h5" component="h2" gutterBottom>
+          {project.title}
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => setOpenMembers(true)}
+        >
+          Members
+        </Button>
+      </Box>
       {/*<Typography variant="h" component="h2" gutterBottom>*/}
       {/*{project.description}*/}
       {/*</Typography>*/}
@@ -97,7 +113,7 @@ const page = ({ params }) => {
           </Typography>
           <Box>
             {tasks
-              .filter((task) => task.status === "backlog")
+              .filter((task) => task.status === "in-progress")
               .map((task) => (
                 <TaskCard
                   key={task.id}
@@ -120,7 +136,7 @@ const page = ({ params }) => {
           </Typography>
           <Box>
             {tasks
-              .filter((task) => task.status === "backlog")
+              .filter((task) => task.status === "done")
               .map((task) => (
                 <TaskCard
                   key={task.id}
@@ -143,7 +159,7 @@ const page = ({ params }) => {
           </Typography>
           <Box>
             {tasks
-              .filter((task) => task.status === "backlog")
+              .filter((task) => task.status === "archived")
               .map((task) => (
                 <TaskCard
                   key={task.id}
@@ -152,6 +168,32 @@ const page = ({ params }) => {
                   id={task.id}
                 />
               ))}
+          </Box>
+          <Box
+            onClick={() => setOpen(true)}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              backgroundColor: "#eee",
+              borderRadius: "8px",
+              mt: 2,
+              py: 1,
+              justifyContent: "flex-start",
+              pl: 2,
+              cursor: "pointer",
+            }}
+          >
+            <Typography
+              variant="p"
+              component="p"
+              gutterBottom
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <AddIcon /> New
+            </Typography>
           </Box>
         </Box>
       </Box>
