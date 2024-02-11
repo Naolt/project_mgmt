@@ -25,7 +25,7 @@ const About = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user.email) {
       router.push("./");
     }
   }, []);
