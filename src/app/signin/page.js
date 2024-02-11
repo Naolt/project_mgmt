@@ -1,24 +1,55 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Form, Field } from "formik";
 import { TextField, Button, FormLabel, Typography, Box } from "@mui/material";
 import Link from "next/link";
 import * as Yup from "yup";
+import { useSignInMutation } from "@/store/services/authApi";
+import { setUser } from "@/store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const LoginSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
 
 const About = () => {
+  const [signIn] = useSignInMutation();
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const router = useRouter();
   const initialValues = {
-    username: "",
+    email: "",
     password: "",
   };
 
-  const handleSubmit = (values) => {
+  useEffect(() => {
+    if (user) {
+      router.push("./");
+    }
+  }, []);
+
+  const handleSubmit = async (values) => {
     // Handle form submission here
-    console.log("Form submitted:", values);
+    try {
+      console.log("Signing in...");
+      const loginData = await signIn(values).unwrap();
+      console.log("Login Data", loginData);
+      // Store user data and token in localStorage
+      if (loginData) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...loginData,
+          })
+        );
+        dispatch(setUser(loginData));
+        router.push("./");
+      }
+    } catch (error) {
+      console.log("Error Signing in:", error);
+    }
   };
 
   return (
@@ -51,17 +82,17 @@ const About = () => {
           {({ errors, touched }) => (
             <Form style={{ display: "flex", flexDirection: "column" }}>
               <FormLabel htmlFor="username" sx={{ marginTop: 2 }}>
-                Username
+                Email
               </FormLabel>
               <Field
-                name="username"
+                name="email"
                 as={TextField}
-                id="outlined-basic"
+                id="email"
                 variant="outlined"
                 size="small"
-                type="text"
-                error={touched.username && !!errors.username}
-                helperText={touched.username && errors.username}
+                type="email"
+                error={touched.email && !!errors.email}
+                helperText={touched.email && errors.email}
               />
 
               <FormLabel htmlFor="password" sx={{ marginTop: 2 }}>
@@ -70,7 +101,7 @@ const About = () => {
               <Field
                 name="password"
                 as={TextField}
-                id="outlined-basic"
+                id="password"
                 variant="outlined"
                 size="small"
                 type="password"
@@ -91,6 +122,7 @@ const About = () => {
                 type="submit"
                 variant="contained"
                 sx={{ justifySelf: "flex-end", mt: 3 }}
+                disabled={touched && Object.keys(errors).length > 0}
               >
                 Login
               </Button>

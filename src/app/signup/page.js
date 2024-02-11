@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   TextField,
@@ -17,6 +17,9 @@ import * as Yup from "yup";
 import zxcvbn from "zxcvbn";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useTheme } from "@emotion/react";
+import { useSignUpMutation } from "@/store/services/authApi";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -33,7 +36,10 @@ const SignupSchema = Yup.object().shape({
 });
 
 const Signup = () => {
+  const router = useRouter();
+  const user = useSelector((state) => state.user);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [signUp] = useSignUpMutation();
   const initialValues = {
     username: "",
     email: "",
@@ -41,10 +47,20 @@ const Signup = () => {
     confirmPassword: "",
   };
   const theme = useTheme();
-  const handleSubmit = (values) => {
-    // Handle form submission here
-    console.log("Form submitted:", values);
+  const handleSubmit = async (values) => {
+    try {
+      await signUp(values);
+      console.log("registered successfully!");
+      router.push("/signin");
+    } catch (error) {
+      console.error("Failed to sign up", error);
+    }
   };
+  useEffect(() => {
+    if (user) {
+      router.push("./");
+    }
+  }, []);
 
   return (
     <Box
@@ -182,6 +198,7 @@ const Signup = () => {
                 type="submit"
                 variant="contained"
                 sx={{ justifySelf: "flex-end", mt: 3 }}
+                disabled={touched && Object.keys(errors).length > 0}
               >
                 Sign up
               </Button>
