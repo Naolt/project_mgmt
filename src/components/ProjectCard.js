@@ -10,12 +10,14 @@ const ProjectCard = ({ title, description, id }) => {
           width: "270px",
           height: "150px",
           p: 3,
-          backgroundColor: "#ccc",
+          backgroundColor: "#fff",
+          border: "1px solid #eee",
           borderRadius: "8px",
           cursor: "pointer",
           transition: "background-color 0.3s",
+          boxShadow: "0 0 10px rgba(200,200,200,0.3)",
           "&:hover": {
-            backgroundColor: "#ddd",
+            backgroundColor: "#eee",
           },
         }}
       >
