@@ -9,8 +9,12 @@ const AuthProvider = ({ children }) => {
   const user = useSelector((state) => state.user);
   useEffect(() => {
     console.log("User changed", JSON.stringify(user));
-    if (!user.email) {
-      router.push("/signin");
+    if (!user.token) {
+      if (user.id) {
+        router.push("/verify");
+      } else {
+        router.push("/signin");
+      }
     }
   }, [user]);
   return <Box>{children}</Box>;

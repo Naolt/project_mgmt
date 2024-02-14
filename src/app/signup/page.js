@@ -20,6 +20,7 @@ import { useTheme } from "@emotion/react";
 import { useSignUpMutation } from "@/store/services/authApi";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -47,8 +48,40 @@ const Signup = () => {
     confirmPassword: "",
   };
   const theme = useTheme();
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
   const handleSubmit = async (values) => {
     try {
+      if (!executeRecaptcha) {
+        return alert({
+          title: "Something went wrong.",
+          description: "We couldn't verify you as a human.",
+          variant: "destructive",
+        });
+      }
+
+      const gReCaptchaToken = await executeRecaptcha("register");
+
+      if (!gReCaptchaToken) {
+        return alert({
+          title: "Something went wrong.",
+          description: "We couldn't verify you as a human.",
+          variant: "destructive",
+        });
+      }
+
+      const response = await fetch(
+        "http://localhost:8000/api/auth/validateRecaptcha",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ recaptchaToken: gReCaptchaToken }),
+        }
+      );
+
       await signUp(values);
       console.log("registered successfully!");
       router.push("/signin");
@@ -57,7 +90,7 @@ const Signup = () => {
     }
   };
   useEffect(() => {
-    if (user) {
+    if (user.token) {
       router.push("./");
     }
   }, []);

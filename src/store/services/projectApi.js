@@ -27,20 +27,9 @@ export const authApi = createApi({
         },
       }),
     }),
-    verify: builder.mutation({
-      query: (data) => ({
-        url: `verify`,
-        method: "POST",
-        body: data, // Pass the data object directly
-        headers: {
-          "content-type": "application/json",
-        },
-      }),
-    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useSignInMutation, useSignUpMutation, useVerifyMutation } =
-  authApi;
+export const { useSignInMutation, useSignUpMutation } = authApi;

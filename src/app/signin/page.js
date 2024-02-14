@@ -38,14 +38,8 @@ const About = () => {
       console.log("Login Data", loginData);
       // Store user data and token in localStorage
       if (loginData) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...loginData,
-          })
-        );
-        dispatch(setUser(loginData));
-        router.push("./");
+        dispatch(setUser({ ...loginData }));
+        router.push("/verify");
       }
     } catch (error) {
       console.log("Error Signing in:", error);

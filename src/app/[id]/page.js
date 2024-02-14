@@ -69,7 +69,7 @@ const page = ({ params }) => {
       {openMembers && <Members close={() => setOpenMembers(false)} />}
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h5" component="h2" gutterBottom>
-          {project.title}
+          {project?.title}
         </Typography>
         <Button
           variant="contained"
